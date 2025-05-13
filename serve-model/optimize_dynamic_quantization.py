@@ -124,7 +124,7 @@ if __name__ == "__main__":
     # RankNet Dummy Input
     dummy_u = torch.randn(16, 128, device="cpu")  # user_feat_dim=128
     dummy_p = torch.randn(16, 3, device="cpu")    # item_feat_dim=3
-    dummy_n = torch.randn(16, 3, device="cpu")
+    #dummy_n = torch.randn(16, 3, device="cpu")
     ModelEvaluator(
         lambda: RankNet(
             user_feat_dim=128,
@@ -134,6 +134,6 @@ if __name__ == "__main__":
             dropout=0.2
         ),
         "ranknet.pth",
-        (dummy_u, dummy_p, dummy_n),
+        (dummy_u, dummy_p),
         "RankNet"
     ).run()
