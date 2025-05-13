@@ -1,0 +1,32 @@
+# Dockerfile
+# 基于 PyTorch 官方 CUDA 镜像，包含三种优化脚本所需环境，并创建 jovyan 用户
+FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
+
+# 切换到 root 用户安装系统依赖并创建 jovyan 用户
+USER root
+RUN apt-get update && \
+    apt-get install -y git build-essential && \
+    pip install --no-cache-dir \
+        jupyterlab \
+        torch torchvision torch-geometric numpy \
+        matplotlib && \
+    groupadd -r jovyan && useradd -r -m -g jovyan jovyan
+
+# 切换到 jovyan 用户
+USER jovyan
+WORKDIR /home/jovyan/work
+
+# 将项目所有文件复制进镜像
+COPY . .
+
+# 确保 jovyan 对挂载的目录有写权限
+USER root
+RUN chown -R jovyan:jovyan /home/jovyan/work
+USER jovyan
+
+# 对外暴露 Jupyter 端口
+EXPOSE 8888
+
+# 启动 JupyterLab，免权限验证
+ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--NotebookApp.token=''"]
+
